@@ -215,6 +215,7 @@ module NiseBosh
     def run_packaging(name)
       @logger.info("Running the packaging script for #{name}")
       package = find_by_name(@release["packages"], name)
+      FileUtils.rm_rf(File.join(@options[:install_dir], "packages", name))
       Bosh::Agent::Message::CompilePackage.process([
           "dummy_blob",
           package["sha1"],
