@@ -196,17 +196,16 @@ module NiseBosh
     end
 
     def install_package(package)
-      version_file = File.join(@options[:install_dir], "packages", package, ".version")
       current_version = nil
-      if File.exists?(version_file)
-        current_version = File.read(version_file).strip
+
+      install_dir = File.join(@options[:install_dir], "packages", package)
+      if File.exists?(install_dir)
+        link_dest = File.readlink(install_dir)
+        current_version = link_dest.split('/').last
       end
+
       if @options[:force_compile] || current_version != package_definition(package)["version"].to_s
-        FileUtils.rm_rf(version_file)
         run_packaging(package)
-        File.open(version_file, 'w') do |file|
-          file.puts(package_definition(package)["version"].to_s)
-        end
       else
         @logger.info("The same version of the package is already installed. Skipping")
       end

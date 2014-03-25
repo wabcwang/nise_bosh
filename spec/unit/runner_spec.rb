@@ -11,7 +11,8 @@ describe Runner do
   def check_installed_package_files
     packages.each do |package|
       expect_contents(package_file_path(package)).to eq(package[:file_contents])
-      expect_contents(install_dir, "packages", package[:name], ".version").to eq(package[:version] + "\n")
+      expect(File.readlink(File.join(install_dir, "packages", package[:name])))
+        .to eq(File.join(install_dir, "data", "packages", package[:name], package[:version]))
     end
   end
 
@@ -44,7 +45,8 @@ describe Runner do
       expect($?.exitstatus).to eq(0)
       packages.each do |package|
         expect_contents(File.join(dir, "packages", package[:name], "dayo")).to eq(package[:file_contents])
-        expect_contents(dir, "packages", package[:name], ".version").to eq(package[:version] + "\n")
+        expect(File.readlink(File.join(dir, "packages", package[:name])))
+          .to eq(File.join(dir, "data", "packages", package[:name], package[:version]))
       end
     end
 
@@ -150,7 +152,8 @@ describe Runner do
       FileUtils.cp_r(release_nolocal_dir, tmp_dir)
       out = %x[echo y | bundle exec ./bin/nise-bosh -d #{install_dir} --working-dir #{working_dir} #{cache_dir} #{deploy_manifest_release1} #{success_job} > /dev/null]
       expect($?.exitstatus).to eq(0)
-      expect_contents(install_dir, "packages", "miku", ".version").to eq("1\n")
+      expect(File.readlink(File.join(install_dir, "packages", "miku")))
+        .to eq(File.join(install_dir, "data", "packages", "miku", "1"))
     end
   end
 

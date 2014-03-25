@@ -68,48 +68,36 @@ describe NiseBosh do
   end
 
   describe "#install_package" do
-    let(:version_file) { File.join(install_dir, "packages", package[:name], ".version") }
+    let(:package_dir) { File.join(install_dir, "packages", package[:name]) }
+    let(:link_dest_dir) { File.join(install_dir, "data", "packages", package[:name], package[:version]) }
 
     it "should install the given package" do
       nb.install_package(package[:name])
       expect_contents(package_file_path(package)).to eq(package[:file_contents])
-      expect_contents(version_file).to eq("#{package[:version]}\n")
+      expect(File.readlink(package_dir)).to eq(link_dest_dir)
     end
 
     it "should not install the given package when the package is already installed" do
       nb.install_package(package[:name])
       expect_contents(package_file_path(package)).to eq(package[:file_contents])
-      expect_contents(version_file).to eq("#{package[:version]}\n")
+      expect(File.readlink(package_dir)).to eq(link_dest_dir)
       FileUtils.rm_rf(package_file_path(package))
       expect_file_exists(package_file_path(package)).to eq false
       nb.install_package(package[:name])
       expect_file_exists(package_file_path(package)).to eq false
-      expect_contents(version_file).to eq("#{package[:version]}\n")
+      expect(File.readlink(package_dir)).to eq(link_dest_dir)
     end
 
     it "should install the given package even if the package is already installed when force_compile option is true" do
       nb.install_package(package[:name])
       expect_contents(package_file_path(package)).to eq(package[:file_contents])
-      expect_contents(version_file).to eq("#{package[:version]}\n")
+      expect(File.readlink(package_dir)).to eq(link_dest_dir)
       FileUtils.rm_rf(package_file_path(package))
       expect_file_exists(package_file_path(package)).to eq false
       force_nb = NiseBosh::Builder.new(options.merge({:force_compile => true}), logger)
       force_nb.install_package(package[:name])
       expect_contents(package_file_path(package)).to eq(package[:file_contents])
-      expect_contents(version_file).to eq("#{package[:version]}\n")
-    end
-
-    it "should delete the version file before start packaging" do
-      nb.install_package(package[:name])
-      expect_contents(version_file).to eq("#{package[:version]}\n")
-      expect do
-        fail_while_packaging_nb = NiseBosh::Builder.new(options.merge({:force_compile => true}), logger)
-        def fail_while_packaging_nb.run_packaging(name)
-          raise Error
-        end
-        fail_while_packaging_nb.install_package(package[:name])
-      end.to raise_error
-      expect_file_exists(version_file).to eq false
+      expect(File.readlink(package_dir)).to eq(link_dest_dir)
     end
   end
 
