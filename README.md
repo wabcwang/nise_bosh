@@ -62,9 +62,9 @@ Note that when your release directory is `dirty` (uncommitted files exist), you 
 
 ### Describe a deployment manifest
 
-Nise-BOSH requires a deployment manifest, which contains the configuration of your release. The Nise-BOSH's manifest file is compatible with, or a subset of, BOSH's manifest format.
+Nise-BOSH requires a [deployment manifest](http://docs.cloudfoundry.org/bosh/deployment-manifest.html), which contains the configuration of your release. The Nise-BOSH's manifest file is compatible with, or a subset of, BOSH's manifest format.
 
-You can find an example at [Cloud foundry docs](http://docs.cloudfoundry.com/docs/running/deploying-cf/vsphere/cloud-foundry-example-manifest.html).
+You can find an example at [Cloud foundry docs](http://docs.cloudfoundry.org/deploying/vsphere/bosh-example-manifest.html).
 
     ---
     jobs:
