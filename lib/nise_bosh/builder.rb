@@ -60,7 +60,7 @@ module NiseBosh
 
       begin
         @release_file = @options[:release_file] ||
-          (newest_release.split("-")[1] == "dev" ?
+          (newest_release.include?("dev") ?
           File.join(@options[:repo_dir], "dev_releases", "#{dev_name}-#{newest_release}.yml"):
           File.join(@options[:repo_dir], "releases", "#{final_name}-#{newest_release}.yml"))
         @release = YAML.load_file(@release_file)
