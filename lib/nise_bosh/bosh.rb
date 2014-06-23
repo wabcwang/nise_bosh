@@ -99,7 +99,7 @@ class Bosh::Director::App
 end
 
 class Bosh::Director::InstanceUpdater
-  def initialize(instance, event_ticker = nil)
+  def initialize(instance, event_log_task, job_renderer)
     @instance = instance
   end
 

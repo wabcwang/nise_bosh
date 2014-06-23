@@ -257,7 +257,7 @@ module NiseBosh
 
       target_job = find_by_name(deployment_plan.jobs, job_name)
 
-      Bosh::Director::JobUpdater.new(deployment_plan, target_job).update
+      Bosh::Director::JobUpdaterFactory.new(Bosh::Director::App.instance.blobstores.blobstore).new_job_updater(deployment_plan, target_job).update
       apply_spec = target_job.instances[0].spec
       apply_spec["index"] = @index
 
