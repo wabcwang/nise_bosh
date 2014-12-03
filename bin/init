@@ -55,9 +55,11 @@ if [ -d /boot/grub ]; then
         variant="lts-backport-oneiric"
 
         # Headers are needed for open-vm-tools
-        apt-get install -y linux-image-virtual-${variant} linux-headers-virtual-${variant}
+        DEBIAN_FRONTEND=noninteractive apt-get install -o Dpkg::Options::="--force-confnew" -y -f \
+            linux-image-virtual-${variant} linux-headers-virtual-${variant}
     else
-        apt-get install -y linux-image-virtual linux-image-extra-virtual
+        DEBIAN_FRONTEND=noninteractive apt-get install -o Dpkg::Options::="--force-confnew" -y -f \
+            linux-image-virtual linux-image-extra-virtual
     fi
 fi
 # stemcell_builder/stages/bosh_monit/apply.sh
