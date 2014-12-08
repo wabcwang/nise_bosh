@@ -119,7 +119,11 @@ module NiseBosh
       %w(bosh jobs packages monit store shared).each do |dir|
         FileUtils.mkdir_p(File.join(@options[:install_dir], dir))
       end
-      FileUtils.chown('vcap', 'vcap', File.join(@options[:install_dir], "shared"))
+      begin
+        FileUtils.chown('vcap', 'vcap', File.join(@options[:install_dir], "shared"))
+      rescue
+        # Rescue errors caused by NFS mounts
+      end
 
       Bosh::Agent::Bootstrap.new.setup_data_sys
     end
