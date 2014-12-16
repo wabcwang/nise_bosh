@@ -15,6 +15,7 @@ class Runner
     @options = {
       :install_dir => File.join("/", "var", "vcap"),
       :working_dir => File.join("/", "tmp", "nise_bosh"),
+      :networks => {}
     }
 
     parse_argv(argv)
@@ -33,6 +34,15 @@ class Runner
     opt.on('-d INSTALL_DIR', 'Install directory') { |v| @options[:install_dir] = v }
     opt.on('--working-dir WORKING_DIR', 'Temporary working directory') {|v| @options[:working_dir] = v }
     opt.on('-n IP_ADDRESS', 'IP address for this host') { |v| @options[:ip_address] = v }
+    opt.on('-N NETWORK_NAME=IP_ADDRESS', 'Static IP address for this host') do |v|
+      unless v.include?('=')
+        $stderr.puts(opt.help)
+        $stderr.puts("-N option requires NETWORKNAME and IP_ADDRESS")
+        exit(1)
+      end
+      key, value = v.split('=')
+      @options[:networks][key] = value
+    end
     opt.on('-i INDEX_NUMBER', 'Index number for this host') { |v| @options[:index] = v.to_i }
     opt.on('-r RELEASE_FILE', 'Release file') { |v| @options[:release_file] = v }
     opt.on('-f', 'Force compile') { |v| @options[:force_compile] = true }

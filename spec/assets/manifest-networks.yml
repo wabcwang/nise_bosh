@@ -1,0 +1,26 @@
+---
+jobs:
+  - name: legna
+    template: angel
+    networks:
+      - name: not_default
+      - name: default
+        static_ips:
+          - 192.168.13.39
+
+networks:
+  - name: not_default
+    type: dynamic
+    cloud_properties:
+      security_groups:
+        - default
+  - name: default
+    type: vip
+    cloud_properties: {}
+
+properties:
+  miku:
+    san:
+      maji: tenshi
+  hide:
+    value: true

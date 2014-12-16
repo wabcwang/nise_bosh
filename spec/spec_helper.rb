@@ -7,6 +7,7 @@ shared_context "default values" do
   let(:release_noindex_dir) { File.join(assets_dir, "release_noindex") }
   let(:release_nolocal_dir) { File.join(assets_dir, "release_nolocal") }
   let(:deploy_manifest) { File.join(assets_dir, "manifest.yml") }
+  let(:deploy_manifest_networks) { File.join(assets_dir, "manifest-networks.yml") }
   let(:deploy_manifest_release1) { File.join(assets_dir, "manifest-release1.yml") }
   let(:release_name) { "assets" }
   let(:release_version) { "1.3-dev" }

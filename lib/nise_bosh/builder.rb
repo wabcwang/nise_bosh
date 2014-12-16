@@ -106,6 +106,11 @@ module NiseBosh
           job_spec["resource_pool"] ||= "default"
           job_spec["instances"] ||= 1
           job_spec["networks"] ||= [{"name" => "default"}]
+
+          # Required, but they will be ignored
+          if job_spec["networks"].size > 1
+            job_spec["networks"][0]['default'] = ['dns', 'gateway']
+          end
         end
       end
     end
@@ -252,7 +257,12 @@ module NiseBosh
 
     def install_job(job_name, template_only = false)
       job_spec = find_by_name(@deploy_manifest["jobs"], job_name)
-      job_spec["networks"][0]["static_ips"] ||= [ip_address]
+
+      job_spec["networks"].each do |network|
+        if network['static_ips'] && network['static_ips'].size > 1 && @options[:networks][network['name']].nil?
+          raise "Multiple floating ip addresses are assigned to job #{job_spec['name']}, but -N option is not given."
+        end
+      end
 
       deployment_plan = Bosh::Director::DeploymentPlan::Planner.parse(@deploy_manifest, Bosh::Director::EventLog::Log.new, {})
       deployment_plan_compiler = Bosh::Director::DeploymentPlan::Assembler.new(deployment_plan)
@@ -264,6 +274,15 @@ module NiseBosh
       Bosh::Director::JobUpdaterFactory.new(Bosh::Director::App.instance.blobstores.blobstore).new_job_updater(deployment_plan, target_job).update
       apply_spec = target_job.instances[0].spec
       apply_spec["index"] = @index
+      apply_spec["networks"].each_pair do |name, network|
+        if network['type'] != 'vip'
+          network['ip'] = ip_address
+        else
+          if @options[:networks][name]
+            network['ip'] = @options[:networks][name]
+          end
+        end
+      end
 
       unless template_only
         install_packages(target_job.send("run_time_dependencies"))

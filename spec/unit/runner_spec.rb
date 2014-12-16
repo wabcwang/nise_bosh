@@ -69,6 +69,13 @@ describe Runner do
       expect_contents(install_dir, "jobs", "angel", "config", "miku.conf").to eq("tenshi\n39\n39.39.39.39\n")
     end
 
+    it "should setup given job with networks" do
+      out = %x[bundle exec ./bin/nise-bosh -y -n 39.39.39.39 -d #{install_dir} --working-dir #{working_dir} #{release_dir} #{deploy_manifest_networks} #{success_job} > /dev/null]
+p      expect($?.exitstatus).to eq(0)
+      check_installed_package_files
+      expect_contents(install_dir, "jobs", "angel", "config", "miku.conf").to eq("tenshi\n0\n192.168.13.39\n")
+    end
+
     it "should setup only job template files when given -t option" do
       out = %x[bundle exec ./bin/nise-bosh -y -t -d #{install_dir} --working-dir #{working_dir} #{release_dir} #{deploy_manifest} #{success_job} > /dev/null]
       expect($?.exitstatus).to eq(0)
