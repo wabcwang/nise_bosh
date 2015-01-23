@@ -1,0 +1,4 @@
+set -e
+
+echo "${BOSH_PACKAGE_NAME} ${BOSH_PACKAGE_VERSION}" > ${BOSH_INSTALL_TARGET}/dayo
+

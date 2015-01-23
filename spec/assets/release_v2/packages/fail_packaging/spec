@@ -1,0 +1,5 @@
+---
+name: fail_packaging
+files:
+  - miku/file
+

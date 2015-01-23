@@ -44,13 +44,17 @@ module NiseBosh
       config_dir = File.join(@options[:repo_dir], "config")
 
       final_config_path = File.join(config_dir, "final.yml")
-      final_name = File.exists?(final_config_path) ? YAML.load_file(final_config_path)["final_name"] : nil
+      final_name = File.exists?(final_config_path) ? YAML.load_file(final_config_path)["final_name"] : ""
       final_index_path = File.join(@options[:repo_dir], "releases", "index.yml")
       final_index = File.exists?(final_index_path) ? YAML.load_file(final_index_path)["builds"] : {}
 
       dev_config_path = File.join(config_dir, "dev.yml")
-      dev_name = File.exists?(dev_config_path) ? YAML.load_file(dev_config_path)["dev_name"] : nil
-      dev_index_path = File.join(@options[:repo_dir], "dev_releases", "index.yml")
+      dev_name = File.exists?(dev_config_path) ? YAML.load_file(dev_config_path)["dev_name"] : ""
+      dev_index_path = File.join(@options[:repo_dir], "dev_releases", dev_name, "index.yml")
+      unless File.exists?(dev_index_path) # older style
+        dev_index_path = File.join(@options[:repo_dir], "dev_releases", "index.yml")
+        older_dev_index = true
+      end
       dev_index = File.exists?(dev_index_path) ? YAML.load_file(dev_index_path)["builds"] : {}
 
       if @options[:release_file].nil? && final_index.size == 0 && dev_index.size == 0
@@ -59,9 +63,13 @@ module NiseBosh
       newest_release = get_newest_release(final_index.merge(dev_index).map {|k, v| v["version"]})
 
       begin
+        dev_release_file = older_dev_index ?
+          File.join(@options[:repo_dir], "dev_releases", "#{dev_name}-#{newest_release}.yml") :
+          File.join(@options[:repo_dir], "dev_releases", dev_name, "#{dev_name}-#{newest_release}.yml")
+
         @release_file = @options[:release_file] ||
           (newest_release.include?("dev") ?
-          File.join(@options[:repo_dir], "dev_releases", "#{dev_name}-#{newest_release}.yml"):
+          dev_release_file :
           File.join(@options[:repo_dir], "releases", "#{final_name}-#{newest_release}.yml"))
         @release = YAML.load_file(@release_file)
       rescue
@@ -70,20 +78,18 @@ module NiseBosh
     end
 
     def get_newest_release(index)
-      sort_release_version(index).last
-    end
+      index.map(&:to_s).sort do |left, right|
+        left_major, left_dev = left.split("+")
+        right_major, right_dev = right.split("+")
 
-    def sort_release_version(index)
-      result = index.map {|v| v.to_s.split("-")}.sort do |(v1, v1_dev) , (v2, v2_dev)|
-        (v1, v1_frc) = v1.split("."); (v2, v2_frc) = v2.split(".")
-        v1_frc ||= "0"; v2_frc ||= "0"
-        (v1 != v2) ? v1.to_i <=> v2.to_i :
-          (v1_frc != v2_frc) ? v1_frc.to_i <=> v2_frc.to_i :
-          (v1_dev == v2_dev) ? raise("Invalid index file") :
-          (v2_dev == "dev") ? 1 :
-          -1
-      end
-      result.map {|v| v[1] ? v.join("-") : v[0]}
+        if left_major == right_major
+          left_dev_num = left_dev ? left_dev.split(".")[1].to_i : 0
+          right_dev_num = right_dev ? right_dev.split(".")[1].to_i : 0
+          left_dev_num <=> right_dev_num
+        else
+          left_major.to_i <=> right_major.to_i
+        end
+      end.last
     end
 
     def initialize_depoy_manifest()
@@ -92,6 +98,18 @@ module NiseBosh
           @deploy_manifest = YAML.load_file(@options[:deploy_manifest])
         rescue
           raise "Manifest file not found!"
+        end
+
+        # support format version 2
+        @deploy_manifest["jobs"].each do |job|
+          templates = job["templates"] || job["template"]
+          templates = [templates] if templates.is_a? String
+          job["templates"] = templates
+          job.delete("template")
+
+          job["templates"].map! do |template|
+            (template.is_a? String) ? { "name" => template } : template
+          end
         end
 
         # default values
@@ -298,20 +316,19 @@ module NiseBosh
     end
 
     def job_templates(job_name)
-      templates = find_by_name(@deploy_manifest["jobs"], job_name)["template"]
-      templates = [templates] if templates.is_a? String
-      templates
+      job = find_by_name(@deploy_manifest["jobs"], job_name)
+      job["templates"]
     end
 
-    def job_template_packages(job_template_name)
-      job_template_spec(job_template_name)["packages"]
+    def job_template_packages(job_template)
+      job_template_spec(job_template["name"])["packages"]
     end
 
     def job_all_packages(job_name)
       job_templates(job_name).inject([]) { |i, template|
         i += job_template_packages(template)
       }.uniq
-   end
+    end
 
     def job_exists?(name)
       !find_by_name(@deploy_manifest["jobs"], name).nil?

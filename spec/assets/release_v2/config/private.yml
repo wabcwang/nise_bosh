@@ -1,0 +1,4 @@
+---
+blobstore_secret: 
+blobstore:
+  local: {}

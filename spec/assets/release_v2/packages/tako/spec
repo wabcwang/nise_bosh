@@ -1,0 +1,6 @@
+---
+name: tako
+dependencies:
+  - luca
+files:
+  - tako/file

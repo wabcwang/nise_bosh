@@ -1,0 +1,11 @@
+---
+builds:
+  492e9fe6cfa11ef725f680b246464a13d8397b15:
+    version: 0.1-dev
+    sha1: 7e2e988a436beda7ff47a4c264e837d0cc654918
+  !binary "MGM5ODRjOGNkZjkwMjMxNzBhOWY1YTY0ZmIwYjIwMTU1MWQ3MDc2Zg==":
+    version: !binary |-
+      MGM5ODRjOGNkZjkwMjMxNzBhOWY1YTY0ZmIwYjIwMTU1MWQ3MDc2Zg==
+    sha1: !binary |-
+      Njg1YjBkMGZhNmU0YzgwNDhhY2E5NTYwOWNhODIyMWQ5ZWQ3MmYzNw==
+format-version: '2'

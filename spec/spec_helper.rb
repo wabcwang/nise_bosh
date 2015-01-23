@@ -3,27 +3,45 @@ shared_context "default values" do
   let(:install_dir) { File.join(tmp_dir, "install") }
   let(:working_dir) { File.join(tmp_dir, "working") }
   let(:assets_dir) { File.join(".", "spec", "assets") }
-  let(:release_dir) { File.join(assets_dir, "release") }
   let(:release_noindex_dir) { File.join(assets_dir, "release_noindex") }
   let(:release_nolocal_dir) { File.join(assets_dir, "release_nolocal") }
   let(:deploy_manifest) { File.join(assets_dir, "manifest.yml") }
   let(:deploy_manifest_networks) { File.join(assets_dir, "manifest-networks.yml") }
   let(:deploy_manifest_release1) { File.join(assets_dir, "manifest-release1.yml") }
   let(:release_name) { "assets" }
-  let(:release_version) { "1.3-dev" }
   let(:success_job) { "legna" }
   let(:success_job_template) { "angel" }
   let(:fail_job) { "fail_job" }
-  let(:packages) {
-    [{:name => "miku", :file_contents => "miku 1.1-dev\n", :version => "1.1-dev"},
-     {:name => "luca", :file_contents => "tenshi\n", :version => "1"}]
-  }
   let(:package) { packages[0] }
   let(:archive_dir) { File.join(tmp_dir, "archive") }
   let(:default_archive_name) { "assets-#{success_job}-#{release_version}.tar.gz" }
   let(:job_monit_file) { "0000_#{success_job}.angel.monitrc" }
   let(:current_ip) {
     %x[ip -4 -o address show].match('inet ([\d.]+)/.*? scope global') { |md| md[1] }
+  }
+end
+
+shared_context "version 2 values" do
+  let(:release_dir) { File.join(assets_dir, "release_v2") }
+  let(:release_version) { "1+dev.4" }
+  let(:packages) {
+    [{:name => "miku", :file_contents => "miku 9c63af569d431602004d3264734c587b49c78afc\n", :version => "9c63af569d431602004d3264734c587b49c78afc"},
+     {:name => "luca", :file_contents => "tenshi\n", :version => "216ff01fae979ebd3543e41db1c0d608dc70ae1e"}]
+  }
+  let(:release_file_path) {
+    File.join(File.expand_path(release_dir), "dev_releases", release_name, "#{release_name}-#{release_version}.yml")
+  }
+end
+
+shared_context "version 1 values" do
+  let(:release_dir) { File.join(assets_dir, "release_v1") }
+  let(:release_version) { "1.3-dev" }
+  let(:packages) {
+    [{:name => "miku", :file_contents => "miku 1.1-dev\n", :version => "1.1-dev"},
+     {:name => "luca", :file_contents => "tenshi\n", :version => "1"}]
+  }
+  let(:release_file_path) {
+    File.join(File.expand_path(release_dir), "dev_releases", "#{release_name}-#{release_version}.yml")
   }
 end
 

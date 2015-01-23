@@ -1,0 +1,6 @@
+---
+name: rin
+dependencies:
+  - ren
+files:
+  - rin/file

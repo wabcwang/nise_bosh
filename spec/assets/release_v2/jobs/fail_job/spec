@@ -1,0 +1,6 @@
+---
+name: fail_job
+templates: {}
+
+packages:
+- fail_packaging

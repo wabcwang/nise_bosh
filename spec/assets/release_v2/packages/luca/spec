@@ -1,0 +1,6 @@
+---
+name: luca
+dependencies:
+  - miku
+files:
+  - luca/file

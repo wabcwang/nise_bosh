@@ -1,0 +1,11 @@
+---
+builds:
+  67ff0311711949d73e4190b3858c46c249356803:
+    version: 0.1-dev
+    sha1: 45518bf2aa82e7e24ac64202b26fbeaa54bebef5
+  !binary "MjE2ZmYwMWZhZTk3OWViZDM1NDNlNDFkYjFjMGQ2MDhkYzcwYWUxZQ==":
+    version: !binary |-
+      MjE2ZmYwMWZhZTk3OWViZDM1NDNlNDFkYjFjMGQ2MDhkYzcwYWUxZQ==
+    sha1: !binary |-
+      MzM3NWU4NzkzNzMxMjA3YzdmNzg4ZWRiNmIzNWM5M2I5MDU4ZTBmNQ==
+format-version: '2'

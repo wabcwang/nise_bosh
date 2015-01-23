@@ -1,0 +1,62 @@
+--- 
+packages: 
+- name: luca
+  version: 1
+  sha1: 45518bf2aa82e7e24ac64202b26fbeaa54bebef5
+  fingerprint: 67ff0311711949d73e4190b3858c46c249356803
+  dependencies: 
+  - miku
+- name: fail_packaging
+  version: 1.1-dev
+  sha1: dd8c8965bb2723c59a0c327b56f347587505b4f8
+  fingerprint: 88c574b0b5e22fec8ff8cba00310e9df95393082
+  dependencies: []
+
+- name: rin
+  version: 1
+  sha1: 3517b540220e2be8c357215a3268146aa7a3764a
+  fingerprint: 0009dc06b560f58e754cc9d38f160b099714dbcf
+  dependencies: 
+  - ren
+- name: kaito
+  version: 1
+  sha1: 8f54c4cd7ffb9c848efbbe7ffd11f2fb25be7321
+  fingerprint: b7504b366f71cc6322ac3a68440c076d0393099c
+  dependencies: []
+
+- name: miku
+  version: 1.1-dev
+  sha1: ce3bb6b6ff2f0d32f2f193b7185a9260148bad68
+  fingerprint: 6f4ef6a1b3eff5cd91eebed038e248bb7268275f
+  dependencies: []
+
+- name: tako
+  version: 1
+  sha1: 9a4cde854a9f1cfc75a82e7b5dc43cc8627a0de4
+  fingerprint: 1d3a015ed2e0dbc9c57496c2052812c1b1617e3e
+  dependencies: 
+  - luca
+- name: meiko
+  version: 1
+  sha1: 7e2e988a436beda7ff47a4c264e837d0cc654918
+  fingerprint: 492e9fe6cfa11ef725f680b246464a13d8397b15
+  dependencies: 
+  - tako
+  - luca
+- name: ren
+  version: 1
+  sha1: bcbf354f54840762ca9f54c599d667be77cc3618
+  fingerprint: 8012bceed2b6f1ae5b0dd4fa41d9d6e9ed7f8d08
+  dependencies: []
+
+jobs: 
+- name: angel
+  version: 1.1-dev
+  fingerprint: 03b85e4341512cb76ff5a4284c2036c0c1cbbcb8
+  sha1: ed35fabddff3871d2b8a5220efb41155e93beb11
+- name: yellows
+  version: 0.1-dev
+  fingerprint: 62ef567eca3d171b1bd18b894ec2fa51140bdf74
+  sha1: 7deef0c7170d58ff30b544198bedd5f696761fed
+name: assets
+version: 1.2-dev

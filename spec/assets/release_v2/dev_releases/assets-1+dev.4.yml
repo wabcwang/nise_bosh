@@ -1,0 +1,97 @@
+---
+packages:
+- name: ren
+  version: !binary |-
+    NGI2NzVmOWFkNDY1ZjM0ODAwNGE0Njg1ZjBiMDNkZWVkMTIyZDQ1OQ==
+  sha1: !binary |-
+    MWFmNGNlYTJkMDVjZTE3MDQ2MGMyNjI3NDQ3ZjZlNGQ5YjQ5YjE1Yg==
+  fingerprint: !binary |-
+    NGI2NzVmOWFkNDY1ZjM0ODAwNGE0Njg1ZjBiMDNkZWVkMTIyZDQ1OQ==
+  dependencies: []
+- name: tako
+  version: !binary |-
+    ODkxNmU4ZjM5OTQ5MjI3MWVhMzVkOThlOTVlNjMwMDdhYTQ5ZGFhMQ==
+  sha1: !binary |-
+    MjI0YzI4OWQ2YzY1YjQxYzNmMTEyMGI3OGFhZDk1N2I4MmUyMWI4OA==
+  fingerprint: !binary |-
+    ODkxNmU4ZjM5OTQ5MjI3MWVhMzVkOThlOTVlNjMwMDdhYTQ5ZGFhMQ==
+  dependencies:
+  - luca
+- name: meiko
+  version: !binary |-
+    MGM5ODRjOGNkZjkwMjMxNzBhOWY1YTY0ZmIwYjIwMTU1MWQ3MDc2Zg==
+  sha1: !binary |-
+    Njg1YjBkMGZhNmU0YzgwNDhhY2E5NTYwOWNhODIyMWQ5ZWQ3MmYzNw==
+  fingerprint: !binary |-
+    MGM5ODRjOGNkZjkwMjMxNzBhOWY1YTY0ZmIwYjIwMTU1MWQ3MDc2Zg==
+  dependencies:
+  - tako
+  - luca
+- name: rin
+  version: !binary |-
+    ZWViNjdmNmU4ZjI2NGYxYzk1ODdkODRkMWQ3ZTVkMGM0NzE3MDYwNA==
+  sha1: !binary |-
+    NWM1NmIyZTQzMTg2ODJiNTI4NWQzNWU5OWJhMWEzOTY4MWYwOWVmMA==
+  fingerprint: !binary |-
+    ZWViNjdmNmU4ZjI2NGYxYzk1ODdkODRkMWQ3ZTVkMGM0NzE3MDYwNA==
+  dependencies:
+  - ren
+- name: luca
+  version: !binary |-
+    MjE2ZmYwMWZhZTk3OWViZDM1NDNlNDFkYjFjMGQ2MDhkYzcwYWUxZQ==
+  sha1: !binary |-
+    MzM3NWU4NzkzNzMxMjA3YzdmNzg4ZWRiNmIzNWM5M2I5MDU4ZTBmNQ==
+  fingerprint: !binary |-
+    MjE2ZmYwMWZhZTk3OWViZDM1NDNlNDFkYjFjMGQ2MDhkYzcwYWUxZQ==
+  dependencies:
+  - miku
+- name: kaito
+  version: !binary |-
+    ZmQwMjcxMjRkZTYzZGRhMmExN2RmZGUyNWEzN2MxY2JiODlmZWQzZg==
+  sha1: !binary |-
+    M2VlMmE5NmEwNDRlMGU5NDFiN2FjYmZmM2UyMzY5OWRhNDgyODk4ZQ==
+  fingerprint: !binary |-
+    ZmQwMjcxMjRkZTYzZGRhMmExN2RmZGUyNWEzN2MxY2JiODlmZWQzZg==
+  dependencies: []
+- name: miku
+  version: !binary |-
+    OWM2M2FmNTY5ZDQzMTYwMjAwNGQzMjY0NzM0YzU4N2I0OWM3OGFmYw==
+  sha1: !binary |-
+    Yjk5MjUyOThlZTY4YzdlZmUxYmU3MjZlYzg1ODVmMjdiOTM5ZjA1MA==
+  fingerprint: !binary |-
+    OWM2M2FmNTY5ZDQzMTYwMjAwNGQzMjY0NzM0YzU4N2I0OWM3OGFmYw==
+  dependencies: []
+- name: fail_packaging
+  version: !binary |-
+    MGI1YjgxMDY0ZDRjODc5NDQyYjU2Y2Y4MzI3ODdjNmE5OWZjM2I4MA==
+  sha1: !binary |-
+    ZjM5MzUxZmU5OTY2MTIwYzM4Y2M5ZmY0MjA3YjIxNGE2NmZlMTkzOA==
+  fingerprint: !binary |-
+    MGI1YjgxMDY0ZDRjODc5NDQyYjU2Y2Y4MzI3ODdjNmE5OWZjM2I4MA==
+  dependencies: []
+jobs:
+- name: fail_job
+  version: !binary |-
+    ZmU4MGY5Yjk3NjY3YTU1YTgzYTgzYzY5YjBiZjE4MWFkMmRmMDEzZA==
+  fingerprint: !binary |-
+    ZmU4MGY5Yjk3NjY3YTU1YTgzYTgzYzY5YjBiZjE4MWFkMmRmMDEzZA==
+  sha1: !binary |-
+    OTJkYzk3MTQ0YjU4ZDQ1NDYxZTk4MjliNTg3NTc1OWNiOWUyYTZhMQ==
+- name: yellows
+  version: !binary |-
+    YzNiNDcxNGZhNTgwNDc5OWI3Y2U2N2RkOWVmYzQyNmZiMjVlMTE3Nw==
+  fingerprint: !binary |-
+    YzNiNDcxNGZhNTgwNDc5OWI3Y2U2N2RkOWVmYzQyNmZiMjVlMTE3Nw==
+  sha1: !binary |-
+    MGYyOTYyNTJjYzFhZmFjYjdjZTY1NWMyZTUyZTZjNzI4OWM3YzgxZQ==
+- name: angel
+  version: !binary |-
+    NGQ0MDYxMjQwOTIyODQ5NTEwZDFmYWU2M2U5OTUzMTgxOGU5YjQ0ZA==
+  fingerprint: !binary |-
+    NGQ0MDYxMjQwOTIyODQ5NTEwZDFmYWU2M2U5OTUzMTgxOGU5YjQ0ZA==
+  sha1: !binary |-
+    ZjYxMjhjZjc1NGMyM2I1Y2RmODY3MDYxY2QxZmU0NThhNDBmMTZmMQ==
+commit_hash: '12725415'
+uncommitted_changes: true
+name: assets
+version: 1+dev.4

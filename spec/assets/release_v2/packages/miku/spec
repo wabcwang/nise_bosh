@@ -1,0 +1,5 @@
+---
+name: miku
+files:
+  - miku/file
+  - variant/**/*

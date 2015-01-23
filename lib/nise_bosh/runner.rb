@@ -104,7 +104,7 @@ class Runner
     unless @template_only
       puts("The following templates and packages for job #{@job_name} will be installed.")
       @nb.job_templates(@job_name).each do |template|
-        puts("    # #{template}")
+        puts("    # #{template["name"]}")
         @nb.job_template_packages(template).each do |package|
           puts("        * #{package}")
         end

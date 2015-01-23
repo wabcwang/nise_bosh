@@ -1,0 +1,13 @@
+---
+builds:
+  05246d7eb3ae87536edf078d052d8e77d1c587d5:
+    version: 0.1-dev
+  9291b5edd9bf271e451cc276207040bbdc57cda2:
+    version: 1.1-dev
+  bbf4afbcf1914768f71d9ec8be924e8048d3798f:
+    version: 1.2-dev
+  !binary "YTM2N2IxMGVhZWJjNGVjMmU2NmJhMTE5M2M4MTRmYzE3MjY4YjhkMA==":
+    version: 1.3-dev
+  53863dc8-afef-4f74-9847-b9dac90e14d5:
+    version: 1+dev.4
+format-version: '2'

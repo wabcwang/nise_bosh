@@ -1,0 +1,3 @@
+set -e
+
+not_exist_command

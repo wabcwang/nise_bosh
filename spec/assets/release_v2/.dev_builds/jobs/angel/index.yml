@@ -1,0 +1,14 @@
+---
+builds:
+  23141768bf2d310271a082522e6b03c3167726f3:
+    version: 0.1-dev
+    sha1: a2cf942a5d1f471338bf4ccf408039ace9a211fc
+  03b85e4341512cb76ff5a4284c2036c0c1cbbcb8:
+    version: 1.1-dev
+    sha1: ed35fabddff3871d2b8a5220efb41155e93beb11
+  !binary "NGQ0MDYxMjQwOTIyODQ5NTEwZDFmYWU2M2U5OTUzMTgxOGU5YjQ0ZA==":
+    version: !binary |-
+      NGQ0MDYxMjQwOTIyODQ5NTEwZDFmYWU2M2U5OTUzMTgxOGU5YjQ0ZA==
+    sha1: !binary |-
+      ZjYxMjhjZjc1NGMyM2I1Y2RmODY3MDYxY2QxZmU0NThhNDBmMTZmMQ==
+format-version: '2'

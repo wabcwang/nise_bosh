@@ -5,6 +5,7 @@ require 'spec_helper'
 
 describe NiseBosh do
   include_context "default values"
+  include_context "version 2 values"
 
   let(:options) {
     { :repo_dir => release_dir,
@@ -168,10 +169,10 @@ describe NiseBosh do
    end
   end
 
-  describe "#sort_release_version" do
+  describe "#get_newest_release" do
     it "should sort version numbers" do
-      expect(nb.sort_release_version(%w{1 2 1.1 1.1-dev 33 2.1-dev 33-dev 2.1}))
-        .to eq(%w{1 1.1-dev 1.1 2 2.1-dev 2.1 33-dev 33})
+      expect(nb.get_newest_release(%w{1 2 1+dev.1 33 2+dev.1 33+dev.1 2 3.1+dev.1}))
+        .to eq("33+dev.1")
     end
   end
 
@@ -187,10 +188,10 @@ describe NiseBosh do
       FileUtils.cd(@archive_check_dir) do
         system("tar xvzf #{file_name} > /dev/null")
         expect_to_same(%W{#{options[:repo_dir]} dev_releases #{release_name}-#{release_version}.yml}, [@archive_check_dir, "release.yml"])
-        expect_file_exists(@archive_check_dir, "release", ".dev_builds", "jobs", "angel", "1.1-dev.tgz").to eq true
-        expect_file_exists(@archive_check_dir, "release", ".dev_builds", "jobs", "yellows", "0.1-dev.tgz").to eq true
-        expect_file_exists(@archive_check_dir, "release", ".final_builds", "packages", "luca", "1.tgz").to eq true
-        expect_file_exists(@archive_check_dir, "release", ".dev_builds", "packages", "miku", "1.1-dev.tgz").to eq true
+        expect_file_exists(@archive_check_dir, "release", ".dev_builds", "jobs", "angel", "4d4061240922849510d1fae63e99531818e9b44d.tgz").to eq true
+        expect_file_exists(@archive_check_dir, "release", ".dev_builds", "jobs", "yellows", "c3b4714fa5804799b7ce67dd9efc426fb25e1177.tgz").to eq true
+        expect_file_exists(@archive_check_dir, "release", ".dev_builds", "packages", "luca", "216ff01fae979ebd3543e41db1c0d608dc70ae1e.tgz").to eq true
+        expect_file_exists(@archive_check_dir, "release", ".dev_builds", "packages", "miku", "9c63af569d431602004d3264734c587b49c78afc.tgz").to eq true
       end
     end
 

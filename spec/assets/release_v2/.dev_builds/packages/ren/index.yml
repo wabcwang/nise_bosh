@@ -1,0 +1,11 @@
+---
+builds:
+  8012bceed2b6f1ae5b0dd4fa41d9d6e9ed7f8d08:
+    version: 0.1-dev
+    sha1: bcbf354f54840762ca9f54c599d667be77cc3618
+  !binary "NGI2NzVmOWFkNDY1ZjM0ODAwNGE0Njg1ZjBiMDNkZWVkMTIyZDQ1OQ==":
+    version: !binary |-
+      NGI2NzVmOWFkNDY1ZjM0ODAwNGE0Njg1ZjBiMDNkZWVkMTIyZDQ1OQ==
+    sha1: !binary |-
+      MWFmNGNlYTJkMDVjZTE3MDQ2MGMyNjI3NDQ3ZjZlNGQ5YjQ5YjE1Yg==
+format-version: '2'

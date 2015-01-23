@@ -1,0 +1,7 @@
+---
+name: meiko
+dependencies:
+  - tako
+  - luca
+files:
+  - meiko/file
