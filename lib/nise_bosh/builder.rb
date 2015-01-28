@@ -1,6 +1,7 @@
 require 'yaml'
 require 'psych'
 require 'erb'
+require 'agent_client'
 
 module NiseBosh
   class Builder
@@ -12,11 +13,11 @@ module NiseBosh
 
       @logger = logger
       @index ||=  @options[:index] || 0
+      @agent = Bosh::Agent::Client.create("https://127.0.0.1:6868", "user" => "vcap", "password" => "b00tstrap")
 
       # injection
-      Bosh::Agent::Configuration.set_nise_bosh(self)
-      Bosh::Agent::Message::Apply.set_nise_bosh(self)
       Bosh::Director::DeploymentPlan::Template.set_nise_bosh(self)
+      Bosh::Director::Blobstores.set_nise_bosh(self)
     end
 
     attr_reader :logger
@@ -75,6 +76,8 @@ module NiseBosh
       rescue
         raise "Faild to load release file!"
       end
+
+      @compiled_packages = {}
     end
 
     def get_newest_release(index)
@@ -148,13 +151,13 @@ module NiseBosh
         # Rescue errors caused by NFS mounts
       end
 
-      Bosh::Agent::Bootstrap.new.setup_data_sys
+      #      Bosh::Agent::Bootstrap.new.setup_data_sys
     end
 
 
     def initialize_monit()
-      Bosh::Agent::Monit.setup_monit_user
-      Bosh::Agent::Monit.setup_alerts
+      #      Bosh::Agent::Monit.setup_monit_user
+      #      Bosh::Agent::Monit.setup_alerts
     end
 
     def archive(job, archive_name = nil)
@@ -187,6 +190,10 @@ module NiseBosh
       FileUtils.mkdir_p(@options[:working_dir])
     end
 
+    def working_directory
+      @options[:working_dir]
+    end
+
     def copy_release_file_relative(from_path, to_release_dir)
       to_path = File.join(to_release_dir, from_path[@options[:repo_dir].length..-1])
       FileUtils.mkdir_p(File.dirname(to_path))
@@ -216,10 +223,12 @@ module NiseBosh
       resolved_packages.each do |package|
         @logger.info(" * #{package}")
       end
+      results = []
       resolved_packages.each do |package|
         @logger.info("Installing package #{package}")
-        install_package(package)
+        results << install_package(package)
       end
+      return results
     end
 
     def install_package(package)
@@ -228,11 +237,11 @@ module NiseBosh
       install_dir = File.join(@options[:install_dir], "packages", package)
       if File.exists?(install_dir)
         link_dest = File.readlink(install_dir)
-        current_version = link_dest.split('/').last
+        current_version = File.basename(link_dest).split('.-').first
       end
 
       if @options[:force_compile] || current_version != package_definition(package)["version"].to_s
-        run_packaging(package)
+        return run_packaging(package)
       else
         @logger.info("The same version of the package is already installed. Skipping")
       end
@@ -241,18 +250,51 @@ module NiseBosh
     def run_packaging(name)
       @logger.info("Running the packaging script for #{name}")
       package = find_by_name(@release["packages"], name)
-      FileUtils.rm_rf(File.join(@options[:install_dir], "packages", name))
-      Bosh::Agent::Message::CompilePackage.process([
-          "dummy_blob",
-          package["sha1"],
-          name,
-          package["version"],
-          []
-        ])
-    rescue Bosh::Agent::MessageHandlerError => e
+      #      FileUtils.rm_rf(File.join(@options[:install_dir], "packages", name))
+      dependencies = {}
+      package["dependencies"].each do |dep_name|
+        dep_package = find_by_name(@release["packages"], dep_name)
+        dep_compiled_package = @compiled_packages[dep_name]
+        dependencies[dep_name] = {
+          "blobstore_id" => dep_compiled_package["blobstore_id"],
+          "name" => dep_name,
+          "sha1" => dep_compiled_package["sha1"],
+          "version" => dep_package["version"]
+        }
+      end
+      from_file = find_package_archive(name)
+      to_file = File.join("/tmp", File.basename(from_file))
+      FileUtils.cp(from_file, to_file)
+      token = @agent.compile_package(
+        File.basename(from_file),
+        package["sha1"],
+        name,
+        package["version"],
+        dependencies
+      )
+      result = wait_agent_task(token)
+      @compiled_packages[name] = result["result"]
+      return result["result"]
+    rescue => e
       @logger.info("An error occurred while compiling #{name}")
-      @logger.info(e.blob)
+      @logger.info(e)
       raise e
+    end
+
+    def wait_agent_task(token)
+      task_id = token["agent_task_id"]
+      loop do
+        result = @agent.get_task(task_id)
+        if result["agent_task_id"]
+          if result["state"] != "running"
+            raise "Task failed"
+          end
+          @logger.info("Wating for the task to be completed...")
+          sleep 10
+        else
+          return result
+        end
+      end
     end
 
     def resolve_dependency(packages, resolved_packages = [], trace = [])
@@ -282,14 +324,38 @@ module NiseBosh
         end
       end
 
-      deployment_plan = Bosh::Director::DeploymentPlan::Planner.parse(@deploy_manifest, Bosh::Director::EventLog::Log.new, {})
+      deployment_plan = Bosh::Director::DeploymentPlan::Planner.parse(@deploy_manifest, {}, Bosh::Director::EventLog::Log.new, Logger.new("/dev/null"))
       deployment_plan_compiler = Bosh::Director::DeploymentPlan::Assembler.new(deployment_plan)
       deployment_plan_compiler.bind_properties
       deployment_plan_compiler.bind_instance_networks
 
       target_job = find_by_name(deployment_plan.jobs, job_name)
 
-      Bosh::Director::JobUpdaterFactory.new(Bosh::Director::App.instance.blobstores.blobstore).new_job_updater(deployment_plan, target_job).update
+      packages = target_job.send("run_time_dependencies")
+      unless template_only
+        install_packages(packages)
+      end
+
+      packages.each do |package_name|
+        package_spec = find_by_name(@release["packages"], package_name)
+        compiled_package_spec = @compiled_packages[package_name]
+        dummy_model = OpenStruct.new({
+            "package" => OpenStruct.new({
+                "name" => package_name,
+                "version" => package_spec["version"],
+              }),
+            "sha1" => compiled_package_spec["sha1"],
+            "blobstore_id" => compiled_package_spec["blobstore_id"]
+          })
+        target_job.use_compiled_package(dummy_model)
+      end
+
+      Bosh::Director::JobUpdaterFactory.new(
+        Bosh::Director::App.instance.blobstores
+      )
+        .new_job_updater(deployment_plan, target_job)
+        .update
+
       apply_spec = target_job.instances[0].spec
       apply_spec["index"] = @index
       apply_spec["networks"].each_pair do |name, network|
@@ -302,11 +368,10 @@ module NiseBosh
         end
       end
 
-      unless template_only
-        install_packages(target_job.send("run_time_dependencies"))
-      end
 
-      Bosh::Agent::Message::Apply.process([apply_spec])
+p apply_spec
+      token = @agent.apply(apply_spec)
+      wait_agent_task(token)
     end
 
     def job_template_spec(job_template_name)
