@@ -5,6 +5,16 @@ bosh_dir=${bosh_app_dir}/bosh
 
 apt-get update
 
+# emulating stemcell_builder/stages/image_install_grub/apply.sh
+if [ `lsb_release -cs` ==  "trusty" ]; then
+    if (sed -i -e 's/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="cgroup_enable=memory swapaccount=1"/' /etc/default/grub); then
+        update-grub
+    else
+        echo Your /etc/default/grub is modified from the default
+        exit 1
+    fi
+fi
+
 # stemcell_builder/stages/base_apt/apply.sh
 DEBIAN_FRONTEND=noninteractive apt-get install -o Dpkg::Options::="--force-confnew" -f -y \
 --force-yes --no-install-recommends \
