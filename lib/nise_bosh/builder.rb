@@ -49,7 +49,7 @@ module NiseBosh
       final_index = File.exists?(final_index_path) ? YAML.load_file(final_index_path)["builds"] : {}
 
       dev_config_path = File.join(config_dir, "dev.yml")
-      dev_name = File.exists?(dev_config_path) ? YAML.load_file(dev_config_path)["dev_name"] : nil
+      dev_name = File.exists?(dev_config_path) ? YAML.load_file(dev_config_path).fetch("dev_name", "") : ""
       dev_index_path = File.join(@options[:repo_dir], "dev_releases", "index.yml")
       dev_index = File.exists?(dev_index_path) ? YAML.load_file(dev_index_path)["builds"] : {}
 
