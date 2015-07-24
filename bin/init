@@ -73,26 +73,21 @@ if [ -d /boot/grub ]; then
     fi
 fi
 # stemcell_builder/stages/bosh_monit/apply.sh
-monit_basename=monit-5.2.4
+monit_basename=monit-5.14
 (
     cd /tmp
-    wget "http://mmonit.com/monit/dist/${monit_basename}.tar.gz" -O ${monit_basename}.tar.gz
+    wget "https://mmonit.com/monit/dist/${monit_basename}.tar.gz" -O ${monit_basename}.tar.gz
     tar xvzf ${monit_basename}.tar.gz
     cd ${monit_basename}
     ./configure --prefix=$bosh_dir --without-ssl
     make -j4 && make install
 )
 mkdir -p $bosh_dir/etc
-cat <<EOF > /$bosh_dir/etc/monitrc
-set daemon 10
-set logfile /var/vcap/monit/monit.log
+LOCAL_IP=$(ip addr | grep 'inet .*global' | cut -f 6 -d ' ' | cut -f1 -d '/' | grep 10.)
+sed "s/INTRANET_IP/${LOCAL_IP}/g" ../config/monitrc.example > ../config/monitrc
 
-set httpd port 2822 and use address 127.0.0.1
-  allow cleartext /var/vcap/monit/monit.user
+cp ../config/monitrc /$bosh_dir/etc/monitrc
 
-include /var/vcap/monit/*.monitrc
-include /var/vcap/monit/job/*.monitrc
-EOF
 chmod 0700 $bosh_dir/etc/monitrc
 mkdir -p $bosh_app_dir/monit
 touch $bosh_app_dir/monit/empty.monitrc

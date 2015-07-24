@@ -1,0 +1,13 @@
+set daemon 10
+set logfile /var/vcap/monit/monit.log
+
+set eventqueue basedir /var/vcap/monit/ [slots <number>]
+set mmonit http://<user>:<password>@<host>:<port>/collector
+set httpd port 2812 and use address INTRANET_IP
+   allow INTRANET_IP
+   allow MMONIT_IP
+   allow mmonit_admin:ttxs2kldby
+   allow cleartext /var/vcap/monit/monit.user
+
+include /var/vcap/monit/*.monitrc
+include /var/vcap/monit/job/*.monitrc
