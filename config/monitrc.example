@@ -6,7 +6,7 @@ set mmonit http://<user>:<password>@<host>:<port>/collector
 set httpd port 2812 and use address INTRANET_IP
    allow INTRANET_IP
    allow MMONIT_IP
-   allow mmonit_admin:ttxs2kldby
+   allow monit_admin:ttxs2kldby
    allow cleartext /var/vcap/monit/monit.user
 
 include /var/vcap/monit/*.monitrc
