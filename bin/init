@@ -73,10 +73,12 @@ if [ -d /boot/grub ]; then
     fi
 fi
 # stemcell_builder/stages/bosh_monit/apply.sh
+sudo apt-get install libpam0g-dev
 monit_basename=monit-5.14
+cp ./${monit_basename}.tar.gz /tmp/${monit_basename}.tar.gz
 (
     cd /tmp
-    wget "https://mmonit.com/monit/dist/${monit_basename}.tar.gz" -O ${monit_basename}.tar.gz
+    #wget "https://mmonit.com/monit/dist/${monit_basename}.tar.gz" -O ${monit_basename}.tar.gz
     tar xvzf ${monit_basename}.tar.gz
     cd ${monit_basename}
     ./configure --prefix=$bosh_dir --without-ssl --without-pam
@@ -84,6 +86,7 @@ monit_basename=monit-5.14
 )
 mkdir -p $bosh_dir/etc
 LOCAL_IP=$(ip addr | grep 'inet .*global' | cut -f 6 -d ' ' | cut -f1 -d '/' | grep 10.)
+touch ../config/monitrc
 sed "s/INTRANET_IP/${LOCAL_IP}/g" ../config/monitrc.example > ../config/monitrc
 
 cp ../config/monitrc /$bosh_dir/etc/monitrc
