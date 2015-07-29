@@ -73,8 +73,9 @@ if [ -d /boot/grub ]; then
     fi
 fi
 # stemcell_builder/stages/bosh_monit/apply.sh
-sudo apt-get install libpam0g-dev
-monit_basename=monit-5.14
+#sudo apt-get install -y libpam0g-dev
+#monit_basename=monit-5.14
+monit_basename=monit-5.2.4
 cp ./bin/${monit_basename}.tar.gz /tmp/${monit_basename}.tar.gz
 (
     cd /tmp
