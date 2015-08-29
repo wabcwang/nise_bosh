@@ -86,10 +86,12 @@ cp ./bin/${monit_basename}.tar.gz /tmp/${monit_basename}.tar.gz
     make -j4 && make install
 )
 mkdir -p $bosh_dir/etc
-LOCAL_IP=$(ip addr | grep 'inet .*global' | cut -f 6 -d ' ' | cut -f1 -d '/' | grep 10.)
-sed "s/INTRANET_IP/${LOCAL_IP}/g" ./config/monitrc.example > ./config/monitrc
+LOCAL_IP=$(ip addr | grep 'inet .*global eth0' | cut -f 6 -d ' ' | cut -f1 -d '/')
 
-cp ./config/monitrc /$bosh_dir/etc/monitrc
+#sed "s/INTRANET_IP/${LOCAL_IP}/g" ./config/monitrc.example > ./config/monitrc
+#cp ./config/monitrc $bosh_dir/etc/monitrc
+
+sed "s/INTRANET_IP/${LOCAL_IP}/g" ./config/monitrc.example > /$bosh_dir/etc/monitrc
 
 chmod 0700 $bosh_dir/etc/monitrc
 mkdir -p $bosh_app_dir/monit

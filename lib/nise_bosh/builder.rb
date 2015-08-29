@@ -343,7 +343,23 @@ module NiseBosh
     def find_package_archive(name)
       @release_blobs ||= File.exist?(File.join(@options[:repo_dir], "config")) ? Bosh::Cli::Release.new(@options[:repo_dir]).blobstore : nil
       @release_compiler ||= Bosh::Cli::ReleaseCompiler.new(@release_file, @release_blobs, [], @options[:repo_dir])
-      @release_compiler.find_package(OpenStruct.new(package_definition(name)))
+      tmp_package = OpenStruct.new(package_definition(name))
+      tmp_package_archive = @release_compiler.find_package(tmp_package)
+      if tmp_package_archive.nil?
+        dir_entries = Dir.getwd.split('/')
+        if dir_entries.length > 2 && dir_entries[1] == 'home'
+          bosh_cache_dir = '/'+dir_entries[1]+'/'+dir_entries[2]+'/.bosh/cache'
+        elsif dir_entries.length > 1 && dir_entries[1] == 'root'
+          bosh_cache_dir = '/root/.bosh/cache'
+        else
+          bosh_cache_dir = nil
+        end
+
+        if bosh_cache_dir && FileTest.exist?(File.join(bosh_cache_dir, tmp_package.sha1))
+          tmp_package_archive = File.join(bosh_cache_dir, tmp_package.sha1)
+        end
+      end
+      tmp_package_archive
     end
 
     def find_by_name(set, name)
