@@ -41,40 +41,8 @@ module NiseBosh
     end
 
     def initialize_release_file
-      config_dir = File.join(@options[:repo_dir], "config")
-
-      final_config_path = File.join(config_dir, "final.yml")
-      final_name = File.exists?(final_config_path) ? YAML.load_file(final_config_path)["final_name"] : ""
-      final_index_path = File.join(@options[:repo_dir], "releases", "index.yml")
-      final_index = File.exists?(final_index_path) ? YAML.load_file(final_index_path)["builds"] : {}
-
-      dev_config_path = File.join(config_dir, "dev.yml")
-      dev_name = File.exists?(dev_config_path) ? YAML.load_file(dev_config_path)["dev_name"] : ""
-      dev_index_path = File.join(@options[:repo_dir], "dev_releases", dev_name, "index.yml")
-      unless File.exists?(dev_index_path) # older style
-        dev_index_path = File.join(@options[:repo_dir], "dev_releases", "index.yml")
-        older_dev_index = true
-      end
-      dev_index = File.exists?(dev_index_path) ? YAML.load_file(dev_index_path)["builds"] : {}
-
-      if @options[:release_file].nil? && final_index.size == 0 && dev_index.size == 0
-        raise "No release index found!\nTry `bosh create release` in your release repository."
-      end
-      newest_release = get_newest_release(final_index.merge(dev_index).map {|k, v| v["version"]})
-
-      begin
-        dev_release_file = older_dev_index ?
-          File.join(@options[:repo_dir], "dev_releases", "#{dev_name}-#{newest_release}.yml") :
-          File.join(@options[:repo_dir], "dev_releases", dev_name, "#{dev_name}-#{newest_release}.yml")
-
-        @release_file = @options[:release_file] ||
-          (newest_release.include?("dev") ?
-          dev_release_file :
-          File.join(@options[:repo_dir], "releases", "#{final_name}-#{newest_release}.yml"))
-        @release = YAML.load_file(@release_file)
-      rescue
-        raise "Faild to load release file!"
-      end
+      @release_file = File.join(@options[:repo_dir], "release.MF")
+      @release = YAML.load_file(@release_file)
     end
 
     def get_newest_release(index)
@@ -335,31 +303,20 @@ module NiseBosh
     end
 
     def find_job_template_archive(name)
-      @release_blobs ||= File.exist?(File.join(@options[:repo_dir], "config")) ? Bosh::Cli::Release.new(@options[:repo_dir]).blobstore : nil
-      @release_compiler ||= Bosh::Cli::ReleaseCompiler.new(@release_file, @release_blobs, [], @options[:repo_dir])
-      @release_compiler.find_job(OpenStruct.new(job_template_definition(name)))
+      my_find_archive("jobs",OpenStruct.new(job_template_definition(name)))
     end
 
     def find_package_archive(name)
-      @release_blobs ||= File.exist?(File.join(@options[:repo_dir], "config")) ? Bosh::Cli::Release.new(@options[:repo_dir]).blobstore : nil
-      @release_compiler ||= Bosh::Cli::ReleaseCompiler.new(@release_file, @release_blobs, [], @options[:repo_dir])
-      tmp_package = OpenStruct.new(package_definition(name))
-      tmp_package_archive = @release_compiler.find_package(tmp_package)
-      if tmp_package_archive.nil?
-        dir_entries = Dir.getwd.split('/')
-        if dir_entries.length > 2 && dir_entries[1] == 'home'
-          bosh_cache_dir = '/'+dir_entries[1]+'/'+dir_entries[2]+'/.bosh/cache'
-        elsif dir_entries.length > 1 && dir_entries[1] == 'root'
-          bosh_cache_dir = '/root/.bosh/cache'
-        else
-          bosh_cache_dir = nil
-        end
+      my_find_archive("packages", OpenStruct.new(package_definition(name)))
+    end
 
-        if bosh_cache_dir && FileTest.exist?(File.join(bosh_cache_dir, tmp_package.sha1))
-          tmp_package_archive = File.join(bosh_cache_dir, tmp_package.sha1)
-        end
+    def my_find_archive(type,tmp_package)
+      name=tmp_package.name+".tgz"
+      file_name=File.join(@options[:repo_dir], type,name)
+      if !FileTest.exist?(file_name)
+        puts "file not exist #{file_name}"
       end
-      tmp_package_archive
+      file_name
     end
 
     def find_by_name(set, name)
